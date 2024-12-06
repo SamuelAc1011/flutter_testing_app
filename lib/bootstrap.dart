@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
+import 'package:logger/logger.dart';
 
 class AppBlocObserver extends BlocObserver {
-  const AppBlocObserver();
+  AppBlocObserver();
+
+  final Logger _logger = Logger();
 
   @override
   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
     super.onChange(bloc, change);
-    log('onChange(${bloc.runtimeType}, $change)');
+    _logger.f('onChange(${bloc.runtimeType}, $change)');
   }
 
   @override
@@ -20,12 +22,14 @@ class AppBlocObserver extends BlocObserver {
   }
 }
 
+
+
 Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
 
-  Bloc.observer = const AppBlocObserver();
+  Bloc.observer = AppBlocObserver();
 
   // Add cross-flavor configuration here
 
