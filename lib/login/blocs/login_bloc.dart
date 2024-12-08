@@ -3,13 +3,17 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_testing_app/utils/utils.dart';
 import 'package:formz/formz.dart';
 import 'package:logger/logger.dart';
+import 'package:testing_repository/testing_repository.dart';
+import 'package:testing_service/testing_service.dart';
 
 part 'login_event.dart';
 
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(const LoginState()) {
+  LoginBloc(
+    this._repository,
+  ) : super(const LoginState()) {
     on<LoginInitiated>(_onLoginInitiated);
 
     on<UserInputEdited>(_onUserInputEdited);
@@ -18,12 +22,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     on<LoginSubmitted>(_onLoginSubmitted);
 
+    on<RetryLogin>(_onRetryLogin);
+
     _init();
   }
 
   // Attribute: _logger
   /// Logger instance to log the events and states of the bloc.
   final Logger _logger = Logger();
+
+  // Attribute: _service
+  /// Repository instance to interact with the backend.
+  final TestingRepository _repository;
 
   // Method: _init
   /// Method to initialize the login process.
@@ -66,20 +76,50 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginSubmitted event,
     Emitter<LoginState> emit,
   ) async {
+    if (Formz.validate([state.userInput, state.passwordInput]) != true) {
+      _logger.e('Invalid form');
+      emit(state.copyWith(submitStatus: SubmitStatus.failure));
+      return;
+    }
+
     _logger.f('Login submitted');
     emit(state.copyWith(submitStatus: SubmitStatus.submitting));
 
-    try {
-      if (Formz.validate([state.userInput, state.passwordInput]) != true) {
-        _logger.e('Invalid form');
-        throw Exception('Invalid form');
-      }
-      // Action -> Simulate submitting the login process.
-      _logger.i('Login successful');
-      emit(state.copyWith(submitStatus: SubmitStatus.success));
-    } catch (exception) {
-      _logger.e('Login failed');
-      emit(state.copyWith(submitStatus: SubmitStatus.failure));
-    }
+    final result = await _repository.login(
+      LoginData(
+        user: state.userInput.value,
+        password: state.passwordInput.value,
+      ),
+    );
+
+    result.fold(
+      (error) {
+        _logger.e('Login failed');
+        emit(
+          state.copyWith(
+            submitStatus: SubmitStatus.failure,
+            initStatus: LoginInitStatus.error,
+            errorMessage: error.message,
+          ),
+        );
+      },
+      (response) {
+        _logger.i('Login successful');
+        emit(state.copyWith(submitStatus: SubmitStatus.success));
+      },
+    );
   }
+
+  // Method: _onRetryLogin
+  /// Method to handle the [RetryLogin] event.
+  void _onRetryLogin(
+    RetryLogin event,
+    Emitter<LoginState> emit,
+  ) =>
+      emit(
+        state.copyWith(
+          submitStatus: SubmitStatus.standby,
+          initStatus: LoginInitStatus.loaded,
+        ),
+      );
 }

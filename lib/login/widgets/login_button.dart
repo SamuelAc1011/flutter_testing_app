@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_testing_app/app/router/app_router.gr.dart';
+import 'package:flutter_testing_app/auth/auth.dart';
 import 'package:flutter_testing_app/login/login.dart';
 
 class LoginButton extends StatelessWidget {
@@ -33,19 +34,11 @@ class LoginButton extends StatelessWidget {
   }
 }
 
-
 void _submitListener(BuildContext context, LoginState state) {
   if (state.submitStatus == SubmitStatus.success) {
+    context.read<AuthBloc>().add(
+          const ExtendAuthSession(Duration(seconds: 5)),
+        );
     context.router.replace(const MainRoute());
-  }
-
-  if (state.submitStatus == SubmitStatus.failure) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text('Credenciales incorrectas'),
-        ),
-      );
   }
 }

@@ -30,6 +30,17 @@ $ flutter run --flavor staging --target lib/main_staging.dart
 # Production
 $ flutter run --flavor production --target lib/main_production.dart
 ```
+If you want to use fromEnvironment variables use the following commands:
+```sh
+# Development
+$ flutter run --flavor development --target lib/main_development.dart --dart-define=API_BASE_URL=http://your_api_base_url
+
+# Staging
+$ flutter run --flavor staging --target lib/main_staging.dart --dart-define=API_BASE_URL=http://your_api_base_url
+
+# Production
+$ flutter run --flavor production --target lib/main_production.dart --dart-define=API_BASE_URL=http://your_api_base_url
+```
 
 _\*Flutter Testing App works on iOS, Android, Web, and Windows._
 

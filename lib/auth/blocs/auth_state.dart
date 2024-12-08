@@ -1,10 +1,26 @@
 part of 'auth_bloc.dart';
 
-sealed class AuthState extends Equatable {
-  const AuthState();
-}
+enum AuthStatus { unknown, authenticated, unauthenticated }
 
-final class AuthInitial extends AuthState {
+ class AuthState extends Equatable {
+  const AuthState({
+    this.activeTime,
+    this.status = AuthStatus.unknown,
+ });
+
+  final DateTime? activeTime;
+
+  final AuthStatus status;
+
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [activeTime, status];
+
+  // Method -> CopyWith
+  AuthState copyWith({
+    DateTime? activeTime,
+    AuthStatus? status,
+  }) => AuthState(
+    activeTime: activeTime ?? this.activeTime,
+    status: status ?? this.status,
+  );
 }

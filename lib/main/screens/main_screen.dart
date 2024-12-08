@@ -1,10 +1,10 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_testing_app/app/router/app_router.dart';
 import 'package:flutter_testing_app/app/router/app_router.gr.dart';
 import 'package:flutter_testing_app/auth/auth.dart';
+
+import '../../auth/repository/activity_repository.dart';
 
 @RoutePage()
 class MainProvider extends StatelessWidget {
@@ -12,10 +12,7 @@ class MainProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AuthBloc(),
-      child: const MainScreen(),
-    );
+    return const MainScreen();
   }
 }
 

@@ -37,3 +37,7 @@ class PasswordInputEdited extends LoginEvent {
 // Event: LoginSubmitted
 /// Event to submit the login process.
 class LoginSubmitted extends LoginEvent {}
+
+// Event: RetryLogin
+/// Event to retry the login process.
+class RetryLogin extends LoginEvent {}

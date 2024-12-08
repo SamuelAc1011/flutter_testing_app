@@ -27,6 +27,7 @@ class LoginState extends Equatable {
     this.submitStatus = SubmitStatus.standby,
     this.userInput = const UserInput.pure(),
     this.passwordInput = const PasswordInput.pure(),
+    this.errorMessage,
   });
 
   // Attribute: initStatus
@@ -45,16 +46,21 @@ class LoginState extends Equatable {
   /// The password input for the login process.
   final PasswordInput passwordInput;
 
+  // Attribute: errorMessage
+  /// The error message to display when the login fails.
+  final String? errorMessage;
+
   // Getter -> isFormValid
   /// Getter to check if the form is valid.
   bool get isFormValid => Formz.validate([userInput, passwordInput]);
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         initStatus,
         userInput,
         passwordInput,
         submitStatus,
+        errorMessage,
       ];
 
   // Method: copyWith
@@ -65,11 +71,13 @@ class LoginState extends Equatable {
     SubmitStatus? submitStatus,
     UserInput? userInput,
     PasswordInput? passwordInput,
+    String? errorMessage,
   }) =>
       LoginState(
         initStatus: initStatus ?? this.initStatus,
         submitStatus: submitStatus ?? this.submitStatus,
         userInput: userInput ?? this.userInput,
         passwordInput: passwordInput ?? this.passwordInput,
+        errorMessage: errorMessage ?? this.errorMessage,
       );
 }
