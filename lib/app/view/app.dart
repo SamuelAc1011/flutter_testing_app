@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_testing_app/app/app.dart';
+import 'package:flutter_testing_app/app/router/app_router.dart';
 import 'package:flutter_testing_app/app/router/app_router.gr.dart';
 import 'package:flutter_testing_app/auth/auth.dart';
 import 'package:flutter_testing_app/auth/repository/activity_repository.dart';
@@ -22,18 +23,18 @@ class AppState extends StatelessWidget {
         ),
         RepositoryProvider(create: (context) => UserActivityMonitor()),
         ChangeNotifierProvider(
-          create: (context) => AppRouter(true),
+          create: (context) => AppRouter(),
         ),
       ],
       child: BlocProvider(
-        create: (context) => AuthBloc(
+        create: (context) => ActivityMonitorBloc(
           context.read<UserActivityMonitor>(),
         ),
-        child: BlocListener<AuthBloc, AuthState>(
+        child: BlocListener<ActivityMonitorBloc, ActivityMonitorState>(
           listener: (context, state) {
-            if (state.status == AuthStatus.unauthenticated) {
-              context.read<AuthBloc>().add(LogOut());
-              context.read<AppRouter>().replace(const LoginRoute());
+            if (state.status == ActivityStatus.inactive) {
+              context.read<ActivityMonitorBloc>().add(LogOut());
+              context.read<AppRouter>().replaceAll([const LoginRoute()]);
             }
           },
           listenWhen: (previous, current) => current.status != previous.status,

@@ -9,15 +9,15 @@ part 'auth_event.dart';
 
 part 'auth_state.dart';
 
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final Logger _logger = Logger();
-  final UserActivityMonitor _userActivityMonitor;
+class ActivityMonitorBloc
+    extends Bloc<ActivityMonitorEvent, ActivityMonitorState> {
+  ActivityMonitorBloc(this._userActivityMonitor)
+      : super(const ActivityMonitorState.unknown()) {
 
-  AuthBloc(this._userActivityMonitor) : super(const AuthState()) {
-    // Escucha los cambios de actividad
+    // Action -> The repository is listening to the user's activity status
     _userActivityMonitor.status.listen((activityStatus) {
       if (activityStatus == ActivityStatus.inactive) {
-        add(LogOut()); // Cerrar sesión si el usuario está inactivo
+        add(LogOut());
       }
     });
 
@@ -25,95 +25,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogOut>(_onLogOut);
   }
 
+  // Attribute -> _logger
+  /// Logger for the ActivityMonitorBloc.
+  final Logger _logger = Logger();
+
+  // Attribute -> _userActivityMonitor
+  /// Repository that manages the user's activity status.
+  final UserActivityMonitor _userActivityMonitor;
+
+  // Method -> _extendAuthSession
+  /// Extends the user's session by the given duration.
   Future<void> _extendAuthSession(
     ExtendAuthSession event,
-    Emitter<AuthState> emit,
+    Emitter<ActivityMonitorState> emit,
   ) async {
     _logger.i(
       'Extendiendo sesión del usuario por ${event.duration.inSeconds} segundos',
     );
     _userActivityMonitor.userDidAction(event.duration);
-    // Aquí es donde extendemos la sesión al detectar actividad
-    emit(
-      state.copyWith(
-        status: AuthStatus.authenticated,
-        activeTime: DateTime.now(),
-      ),
-    );
+    emit(const ActivityMonitorState.active());
   }
 
-  void _onLogOut(LogOut event, Emitter<AuthState> emit) {
-    emit(
-      state.copyWith(
-        status: AuthStatus.unauthenticated,
-        activeTime: DateTime.now(),
-      ),
-    );
+  // Method -> _onLogOut
+  /// Logs the user out of the application by setting the user's status to
+  /// inactive.
+  void _onLogOut(LogOut event, Emitter<ActivityMonitorState> emit) {
+    emit(const ActivityMonitorState.inactive());
   }
 }
-
-// class AuthBloc extends Bloc<AuthEvent, AuthState> {
-//   AuthBloc(
-//     this._userActivityMonitor,
-//   ) : super(const AuthState()) {
-//     on<ExtendAuthSession>(_extendAuthSession);
-//     on<LogOut>(_onLogOut);
-//
-//     _userActivityMonitor.status.listen((status) {
-//       if (status == ActivityStatus.inactive) {
-//         add(LogOut());
-//       }
-//     });
-//   }
-//
-//   // Attribute -> _logger
-//   /// Logger for the AuthBloc.
-//   final Logger _logger = Logger();
-//
-//   // Attribute -> _userActivityMonitor
-//   /// Monitors the user's activity.
-//   final UserActivityMonitor _userActivityMonitor;
-//
-//   // Method -> _extendAuthSession
-//   /// Extends the user's session. This is used to keep the user logged in.
-//   Future<void> _extendAuthSession(
-//       ExtendAuthSession event, Emitter<AuthState> emit) async {
-//     _userActivityMonitor.userDidAction();
-//     return emit.onEach(
-//       _userActivityMonitor.status,
-//       onData: (data) async {
-//         switch (data) {
-//           case ActivityStatus.unknown:
-//             break;
-//           case ActivityStatus.active:
-//             emit(
-//               state.copyWith(
-//                 activeTime: DateTime.now(),
-//                 status: AuthStatus.authenticated,
-//               ),
-//             );
-//           case ActivityStatus.inactive:
-//             emit(
-//               state.copyWith(
-//                 activeTime: DateTime.now(),
-//                 status: AuthStatus.unauthenticated,
-//               ),
-//             );
-//         }
-//       },
-//     );
-//   }
-//
-//   // Method -> _onLogOut
-//   /// Logs out the user.
-//   void _onLogOut(LogOut event, Emitter<AuthState> emit) {
-//     // _userActivityMonitor.dispose();
-//     emit(
-//       state.copyWith(
-//         activeTime: DateTime.now(),
-//         status: AuthStatus.unauthenticated,
-//       ),
-//     );
-//   }
-//
-// }

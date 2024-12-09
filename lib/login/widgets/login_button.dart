@@ -1,8 +1,6 @@
-import 'package:auto_route/auto_route.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_testing_app/app/router/app_router.gr.dart';
-import 'package:flutter_testing_app/auth/auth.dart';
 import 'package:flutter_testing_app/login/login.dart';
 
 class LoginButton extends StatelessWidget {
@@ -12,33 +10,24 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
-      // Condition: Listen only when the submit status changes.
-      listenWhen: (previous, current) =>
-          current.submitStatus != previous.submitStatus,
-      listener: _submitListener,
-      child: BlocSelector<LoginBloc, LoginState, SubmitStatus>(
-        selector: (state) => state.submitStatus,
-        builder: (context, submitStatus) {
-          if (submitStatus == SubmitStatus.submitting) {
-            return const CircularProgressIndicator();
-          }
+    return BlocSelector<LoginBloc, LoginState, SubmitStatus>(
+      selector: (state) => state.submitStatus,
+      builder: (context, submitStatus) {
+        if (submitStatus == SubmitStatus.submitting) {
+          return const CircularProgressIndicator();
+        }
 
-          return ElevatedButton(
+        if (submitStatus == SubmitStatus.success) {
+          return const SuccessLoginAnimation();
+        }
+
+        return ElasticIn(
+          child: ElevatedButton(
             onPressed: () => context.read<LoginBloc>().add(LoginSubmitted()),
             child: const Text('Iniciar sesión'),
-          );
-        },
-      ),
-    );
-  }
-}
-
-void _submitListener(BuildContext context, LoginState state) {
-  if (state.submitStatus == SubmitStatus.success) {
-    context.read<AuthBloc>().add(
-          const ExtendAuthSession(Duration(seconds: 5)),
+          ),
         );
-    context.router.replace(const MainRoute());
+      },
+    );
   }
 }

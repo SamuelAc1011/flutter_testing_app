@@ -1,26 +1,24 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { unknown, authenticated, unauthenticated }
+class ActivityMonitorState extends Equatable {
+  const ActivityMonitorState._({
+    this.status = ActivityStatus.unknown,
+  });
 
- class AuthState extends Equatable {
-  const AuthState({
-    this.activeTime,
-    this.status = AuthStatus.unknown,
- });
+  const ActivityMonitorState.unknown() : this._();
 
-  final DateTime? activeTime;
+  const ActivityMonitorState.active()
+      : this._(
+          status: ActivityStatus.active,
+        );
 
-  final AuthStatus status;
+  const ActivityMonitorState.inactive()
+      : this._(
+          status: ActivityStatus.inactive,
+        );
+
+  final ActivityStatus status;
 
   @override
-  List<Object?> get props => [activeTime, status];
-
-  // Method -> CopyWith
-  AuthState copyWith({
-    DateTime? activeTime,
-    AuthStatus? status,
-  }) => AuthState(
-    activeTime: activeTime ?? this.activeTime,
-    status: status ?? this.status,
-  );
+  List<Object?> get props => [status];
 }

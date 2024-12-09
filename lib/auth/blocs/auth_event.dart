@@ -1,13 +1,13 @@
 part of 'auth_bloc.dart';
 
-sealed class AuthEvent extends Equatable {
-  const AuthEvent();
+sealed class ActivityMonitorEvent extends Equatable {
+  const ActivityMonitorEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class ExtendAuthSession extends AuthEvent {
+class ExtendAuthSession extends ActivityMonitorEvent {
   const ExtendAuthSession(this.duration);
 
   final Duration duration;
@@ -16,4 +16,4 @@ class ExtendAuthSession extends AuthEvent {
   List<Object> get props => [duration];
 }
 
-class LogOut extends AuthEvent {}
+class LogOut extends ActivityMonitorEvent {}

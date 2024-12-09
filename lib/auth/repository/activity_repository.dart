@@ -17,17 +17,11 @@ class UserActivityMonitor {
   /// Logger for the UserActivityMonitor.
   final Logger _logger = Logger();
 
-  // Stream<ActivityStatus> get status async* {
-  //   yield ActivityStatus.unknown;
-  //   yield* _controller.stream;
-  // }
-
+  // Method -> status
+  /// Stream that tracks the user's activity status.
   Stream<ActivityStatus> get status => _controller.stream;
 
   void userDidAction(Duration inactivityDuration) {
-    _logger.i(
-      'Usuario realizó una acción, se agregó al temporizador de inactividad',
-    );
     _resetInactivityTimer(inactivityDuration);
   }
 
@@ -38,7 +32,7 @@ class UserActivityMonitor {
   }
 
   void _setUserInactive() {
-    _logger.e('Usuario inactivo en: ${DateTime.now()}');
+    _logger.e('The user was inactive for too long.');
     _inactivityTimer?.cancel();
     _controller.add(ActivityStatus.inactive);
   }

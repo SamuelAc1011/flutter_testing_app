@@ -63,38 +63,39 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text(
-          'Error',
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Lottie.asset(
-          'assets/lotties/error.json',
-          height: MediaQuery.of(context).size.height * 0.2,
-        ),
-        Text(
-          message,
-          style: const TextStyle(
-            fontSize: 20,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 45),
-          child: ElevatedButton(
-            onPressed: () => context.read<LoginBloc>().add(RetryLogin()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade200,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Error',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 34,
+              fontWeight: FontWeight.bold,
             ),
-            child: const Text('Retry', style: TextStyle(color: Colors.white)),
           ),
-        ),
-      ],
-    ));
+          Lottie.asset(
+            'assets/lotties/error.json',
+            height: MediaQuery.of(context).size.height * 0.2,
+          ),
+          Text(
+            message,
+            style: const TextStyle(
+              fontSize: 20,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 45),
+            child: ElevatedButton(
+              onPressed: () => context.read<LoginBloc>().add(RetryLogin()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade200,
+              ),
+              child: const Text('Retry', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
